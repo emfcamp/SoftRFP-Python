@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "virtualrfp"
+version = "1.0.0"
+description = "Virtual DECT RFP simulator for Mitel OMM"
+requires-python = ">=3.10"
+dependencies = [
+    "cryptography>=41.0.0",
+]
+
+[project.scripts]
+virtualrfp = "virtualrfp.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["virtualrfp*"]
