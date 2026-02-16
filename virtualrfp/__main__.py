@@ -21,7 +21,7 @@ import sys
 from datetime import datetime
 
 from .hex_encoding import byte_to_hex
-from .messages import AaMiDeMessage
+from .messages import AaMiDeMessage, MsgType
 from .omm_conf_reader import OmmConfReader
 from .virtual_rfp import VirtualRfp
 
@@ -32,9 +32,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def make_on_message(label: str):
+QUIET_MSG_TYPES = {MsgType.HEARTBEAT, MsgType.SYS_LED}
+
+
+def make_on_message(label: str, debug: bool = False):
     """Create a message callback that prefixes output with a label."""
     def on_message(message: AaMiDeMessage) -> None:
+        if not debug and message.type in QUIET_MSG_TYPES:
+            return
         timestamp = datetime.now().isoformat()
         print(f"{timestamp} [{label}] {message.log()}")
     return on_message
@@ -133,7 +138,7 @@ def main() -> None:
     for mac in macs:
         client = create_client(mac, args)
         short_mac = mac[-4:]
-        client.on_message = make_on_message(short_mac)
+        client.on_message = make_on_message(short_mac, debug=args.debug)
         clients.append((mac, client))
 
     loop = asyncio.new_event_loop()
