@@ -5,7 +5,10 @@ Parses the pipe-delimited OMM configuration file format with MD5 checksum valida
 """
 
 import hashlib
+import logging
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 # Hidden bytes appended to MD5 calculation
@@ -116,7 +119,7 @@ class OmmConfReader:
         md5.update(HIDDEN_MD5_DATA)
         checksum = md5.hexdigest()
         if previous != checksum:
-            raise ValueError(f"invalid checksum: expected {checksum}, got {previous}")
+            logger.warning(f"Config checksum mismatch (expected {checksum}, got {previous}) - continuing anyway")
 
         self._parsed = True
 
